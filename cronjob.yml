@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjobb
+  namespace: namespace
+spec:
+  schedule: "0 7 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: container-name
+            image: path to image
+            command: ["cmd", "/c", "path\\to\\your\\batchfile.bat"]
+            imagePullPolicy: Always
+            env:
+            - name: ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: accountid
+                  key: ACCOUNT_ID
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: clientid
+                  key: CLIENT_ID
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: clientsecret
+                  key: CLIENT_SECRET
+            resources:
+              limits:
+                memory: "250Mi"
+                cpu: "200m"
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 60
